@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 개정이력: 2026.06.17  구재호  레거시 테이블명(LETTN*) -> TB_ 표준 전환 -->
+<mapper namespace="EgovUserInfManageDAO">
+
+
+    <resultMap id="UserInfs" type="egovframework.let.cop.com.service.UserInfVO">
+        <result property="uniqId" column="ESNTL_ID"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="userNm" column="USER_NM"/>
+        <result property="userZip" column="USER_ZIP"/>
+        <result property="userAdres" column="USER_ADRES"/>
+        <result property="userEmail" column="USER_EMAIL"/>
+    </resultMap>
+
+    <resultMap id="UserInfList" type="egovframework.let.cop.com.service.UserInfVO">
+        <result property="uniqId" column="ESNTL_ID"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="userNm" column="USER_NM"/>
+        <result property="userZip" column="USER_ZIP"/>
+        <result property="userAdres" column="USER_ADRES"/>
+        <result property="userEmail" column="USER_EMAIL"/>
+        <result property="useAt" column="USE_AT"/>
+        <result property="deletedAt" column="DELETED_AT"/>
+    </resultMap>
+
+    <resultMap id="AllUserInfList" type="egovframework.let.cop.com.service.UserInfVO">
+        <result property="uniqId" column="ESNTL_ID"/>
+        <result property="trgetId" column="TRGET_ID"/>
+    </resultMap>
+
+    <select id="selectUserList" parameterType="egovframework.let.cop.com.service.UserInfVO" resultMap="UserInfs">
+
+        SELECT  ESNTL_ID
+              , USER_ID
+              , USER_NM
+              , USER_ZIP
+              , USER_ADRES
+              , USER_EMAIL
+          FROM  TB_EMPLYR_INFO
+         WHERE  1=1
+        <if test="searchCnd == 0">AND
+                USER_NM LIKE CONCAT ('%', #{searchWrd},'%')
+        </if>
+         ORDER  BY USER_NM
+         LIMIT  #{recordCountPerPage} OFFSET #{firstIndex}
+
+    </select>
+
+    <select id="selectUserListCnt" parameterType="egovframework.let.cop.com.service.UserInfVO" resultType="java.lang.Integer">
+
+        SELECT  COUNT(ESNTL_ID)
+          FROM  TB_EMPLYR_INFO
+         WHERE  1=1
+        <if test="searchCnd == 0">AND
+                USER_NM LIKE CONCAT ('%', #{searchWrd},'%')
+        </if>
+    </select>
+
+    <select id="selectCmmntyUserList" parameterType="egovframework.let.cop.com.service.UserInfVO" resultMap="UserInfList">
+
+        SELECT  A.ESNTL_ID
+              , A.USER_ID
+              , A.USER_NM
+              , A.USER_ZIP
+              , A.USER_ADRES
+              , A.USER_EMAIL
+              , B.USE_AT
+              , (SELECT USE_AT FROM TB_CMMNTY WHERE CMMNTY_ID = #{trgetId}) AS DELETED_AT
+          FROM  TB_EMPLYR_INFO A
+              , TB_CMMNTY_USER B
+         WHERE  A.ESNTL_ID = B.EMPLYR_ID
+           AND  B.CMMNTY_ID = #{trgetId}
+        <if test="searchCnd == 0">AND
+                A.USER_NM LIKE CONCAT ('%', #{searchWrd},'%')
+        </if>
+         ORDER  BY A.USER_NM
+         LIMIT  #{recordCountPerPage} OFFSET #{firstIndex}
+
+    </select>
+
+    <select id="selectCmmntyUserListCnt" parameterType="egovframework.let.cop.com.service.UserInfVO" resultType="java.lang.Integer">
+
+        SELECT  COUNT(A.ESNTL_ID)
+          FROM  TB_EMPLYR_INFO A
+              , TB_CMMNTY_USER B
+         WHERE  A.ESNTL_ID = B.EMPLYR_ID
+           AND  B.CMMNTY_ID = #{trgetId}
+        <if test="searchCnd == 0">AND
+                A.USER_NM LIKE CONCAT ('%', #{searchWrd},'%')
+        </if>
+    </select>
+
+
+    <select id="selectCmmntyMngrList" parameterType="egovframework.let.cop.com.service.UserInfVO" resultMap="UserInfList">
+
+        SELECT  A.ESNTL_ID
+              , A.USER_ID
+              , A.USER_NM
+              , A.USER_ZIP
+              , A.USER_ADRES
+              , A.USER_EMAIL
+              , B.USE_AT
+              , (SELECT USE_AT FROM TB_CMMNTY WHERE CMMNTY_ID = #{trgetId}) AS DELETED_AT
+          FROM  TB_EMPLYR_INFO A
+              , TB_CMMNTY_USER B
+         WHERE  A.ESNTL_ID = B.EMPLYR_ID
+           AND  B.MNGR_AT = 'Y'
+           AND  B.CMMNTY_ID = #{trgetId}
+        <if test="searchCnd == 0">AND
+                A.USER_NM LIKE CONCAT ('%', #{searchWrd},'%')
+        </if>
+         ORDER  BY A.USER_NM
+         LIMIT  #{recordCountPerPage} OFFSET #{firstIndex}
+
+    </select>
+
+    <select id="selectCmmntyMngrListCnt" parameterType="egovframework.let.cop.com.service.UserInfVO" resultType="java.lang.Integer">
+
+        SELECT  COUNT(A.ESNTL_ID)
+          FROM  TB_EMPLYR_INFO A
+              , TB_CMMNTY_USER B
+         WHERE  A.ESNTL_ID = B.EMPLYR_ID
+           AND  B.MNGR_AT = 'Y'
+           AND  B.CMMNTY_ID = #{trgetId}
+        <if test="searchCnd == 0">AND
+                A.USER_NM LIKE CONCAT ('%', #{searchWrd},'%')
+        </if>
+    </select>
+
+
+    <select id="selectClubUserList" parameterType="egovframework.let.cop.com.service.UserInfVO" resultMap="UserInfList">
+
+        SELECT  A.ESNTL_ID
+              , A.USER_ID
+              , A.USER_NM
+              , A.USER_ZIP
+              , A.USER_ADRES
+              , A.USER_EMAIL
+              , B.USE_AT
+              , (SELECT USE_AT FROM TB_CLUB WHERE CLB_ID = #{trgetId}) AS DELETED_AT
+          FROM  TB_EMPLYR_INFO A
+              , TB_CLUB_USER B
+         WHERE  A.ESNTL_ID = B.EMPLYR_ID
+           AND  B.CLB_ID = #{trgetId}
+        <if test="searchCnd == 0">AND
+                A.USER_NM LIKE CONCAT ('%', #{searchWrd},'%')
+        </if>
+         ORDER  BY A.USER_NM
+         LIMIT  #{recordCountPerPage} OFFSET #{firstIndex}
+
+    </select>
+
+    <select id="selectClubUserListCnt" parameterType="egovframework.let.cop.com.service.UserInfVO" resultType="java.lang.Integer">
+
+        SELECT  COUNT(A.ESNTL_ID)
+          FROM  TB_EMPLYR_INFO A
+              , TB_CLUB_USER B
+         WHERE  A.ESNTL_ID = B.EMPLYR_ID
+           AND  B.CLB_ID = #{trgetId}
+        <if test="searchCnd == 0">AND
+                A.USER_NM LIKE CONCAT ('%', #{searchWrd},'%')
+        </if>
+    </select>
+
+    <select id="selectClubOprtrList" parameterType="egovframework.let.cop.com.service.UserInfVO" resultMap="UserInfList">
+
+        SELECT  A.ESNTL_ID
+              , A.USER_ID
+              , A.USER_NM
+              , A.USER_ZIP
+              , A.USER_ADRES
+              , A.USER_EMAIL
+              , B.USE_AT
+              , (SELECT USE_AT FROM TB_CLUB WHERE CLB_ID = #{trgetId}) AS DELETED_AT
+          FROM  TB_EMPLYR_INFO A
+              , TB_CLUB_USER B
+         WHERE  A.ESNTL_ID = B.EMPLYR_ID
+           AND  B.OPRTR_AT = 'Y'
+           AND  B.CLB_ID = #{trgetId}
+        <if test="searchCnd == 0">AND
+                A.USER_NM LIKE CONCAT ('%', #{searchWrd},'%')
+        </if>
+         ORDER  BY A.USER_NM
+         LIMIT  #{recordCountPerPage} OFFSET #{firstIndex}
+
+    </select>
+
+    <select id="selectClubOprtrListCnt" parameterType="egovframework.let.cop.com.service.UserInfVO" resultType="java.lang.Integer">
+
+        SELECT  COUNT(A.ESNTL_ID)
+          FROM  TB_EMPLYR_INFO A
+              , TB_CLUB_USER B
+         WHERE  A.ESNTL_ID = B.EMPLYR_ID
+           AND  B.OPRTR_AT = 'Y'
+           AND  B.CLB_ID = #{trgetId}
+        <if test="searchCnd == 0">AND
+                A.USER_NM LIKE CONCAT ('%', #{searchWrd},'%')
+        </if>
+    </select>
+
+    <select id="selectAllClubUser" parameterType="egovframework.let.cop.com.service.UserInfVO" resultMap="AllUserInfList">
+
+        SELECT  EMPLYR_ID AS ESNTL_ID
+              , CLB_ID AS TRGET_ID
+          FROM  TB_CLUB_USER
+         WHERE  USE_AT = 'Y'
+           AND  CLB_ID = #{trgetId}
+
+    </select>
+
+    <select id="selectAllCmmntyUser" parameterType="egovframework.let.cop.com.service.UserInfVO" resultMap="AllUserInfList">
+
+        SELECT  EMPLYR_ID AS ESNTL_ID
+              , CMMNTY_ID AS TRGET_ID
+          FROM  TB_CMMNTY_USER
+         WHERE  USE_AT = 'Y'
+           AND  CMMNTY_ID = #{trgetId}
+
+    </select>
+
+</mapper>

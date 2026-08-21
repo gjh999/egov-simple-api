@@ -1,0 +1,440 @@
+﻿DROP TABLE IDS CASCADE CONSTRAINTS;
+CREATE TABLE IDS  (
+  TABLE_NAME varchar2(20) NOT NULL,  -- 대상 테이블명
+  NEXT_ID number(30,0)DEFAULT 0 NOT NULL ,  -- 다음 ID 값
+  CONSTRAINT IDS_PK PRIMARY KEY (TABLE_NAME)
+);
+DROP TABLE COMTECOPSEQ CASCADE CONSTRAINTS;
+CREATE TABLE COMTECOPSEQ  (
+  TABLE_NAME varchar2(20) NOT NULL,  -- 대상 테이블명
+  NEXT_ID number(30,0)DEFAULT 0 NOT NULL ,  -- 다음 ID 값
+  CONSTRAINT COMTECOPSEQ_PK PRIMARY KEY (TABLE_NAME)
+);
+DROP TABLE TB_CMMN_CL_CODE CASCADE CONSTRAINTS;
+CREATE TABLE TB_CMMN_CL_CODE (
+  CL_CODE char(3) NOT NULL,  -- 분류코드
+  CL_CODE_NM varchar2(60) ,  -- 분류코드명
+  CL_CODE_DC varchar2(200) ,  -- 분류코드 설명
+  USE_AT char(1) ,  -- 사용여부(Y/N)
+  FRST_REGIST_PNTTM DATE ,  -- 최초등록시각
+  FRST_REGISTER_ID varchar2(20) ,  -- 최초등록자ID
+  LAST_UPDT_PNTTM DATE ,  -- 최종수정시각
+  LAST_UPDUSR_ID varchar2(20) ,  -- 최종수정자ID
+  CONSTRAINT TB_CMMN_CL_CODE_PK PRIMARY KEY (CL_CODE)
+) ;
+DROP TABLE TB_CMMN_CODE CASCADE CONSTRAINTS;
+CREATE TABLE TB_CMMN_CODE  (
+  CODE_ID varchar2(6) NOT NULL,  -- 코드ID
+  CODE_ID_NM varchar2(60) ,  -- 코드ID명
+  CODE_ID_DC varchar2(200) ,  -- 코드ID 설명
+  USE_AT char(1) ,  -- 사용여부(Y/N)
+  CL_CODE char(3) ,  -- 분류코드
+  FRST_REGIST_PNTTM DATE ,  -- 최초등록시각
+  FRST_REGISTER_ID varchar2(20) ,  -- 최초등록자ID
+  LAST_UPDT_PNTTM DATE ,  -- 최종수정시각
+  LAST_UPDUSR_ID varchar2(20) ,  -- 최종수정자ID
+  CONSTRAINT TB_CMMN_CODE_PK PRIMARY KEY (CODE_ID),
+  CONSTRAINT TB_CMMN_CODE_ibfk_1 FOREIGN KEY (CL_CODE) REFERENCES TB_CMMN_CL_CODE (CL_CODE)
+) ;
+DROP TABLE TB_CMMN_DETAIL_CODE CASCADE CONSTRAINTS;
+CREATE TABLE TB_CMMN_DETAIL_CODE  (
+  CODE_ID varchar2(6) NOT NULL,  -- 코드ID
+  CODE varchar2(15) NOT NULL,  -- 상세코드
+  CODE_NM varchar2(60) ,  -- 상세코드명
+  CODE_DC varchar2(200) ,  -- 상세코드 설명
+  USE_AT char(1) ,  -- 사용여부(Y/N)
+  FRST_REGIST_PNTTM DATE ,  -- 최초등록시각
+  FRST_REGISTER_ID varchar2(20) ,  -- 최초등록자ID
+  LAST_UPDT_PNTTM DATE ,  -- 최종수정시각
+  LAST_UPDUSR_ID varchar2(20) ,  -- 최종수정자ID
+  CONSTRAINT TB_CMMN_DETAIL_CODE_PK PRIMARY KEY (CODE_ID,CODE),
+  CONSTRAINT TB_CMMN_DETAIL_CODE_ibfk_1 FOREIGN KEY (CODE_ID) REFERENCES TB_CMMN_CODE (CODE_ID)
+) ;
+
+DROP TABLE TB_EMPLYR_INFO_CHNG_DTLS CASCADE CONSTRAINTS;
+CREATE TABLE TB_EMPLYR_INFO_CHNG_DTLS (
+  EMPLYR_ID     VARCHAR(20) NOT NULL,  -- 사용자ID
+  CHANGE_DE     CHAR(20)    NOT NULL,  -- 변경일자
+  ORGNZT_ID     CHAR(20),  -- 조직ID
+  GROUP_ID      CHAR(20),  -- 그룹ID
+  EMPL_NO       VARCHAR(20) NOT NULL,  -- 사번
+  SEXDSTN_CODE  CHAR(1),  -- 성별코드
+  BRTHDY        CHAR(20),  -- 생년월일
+  FXNUM         VARCHAR(20),  -- 팩스
+  HOUSE_ADRES   VARCHAR(100) NOT NULL,  -- 자택주소
+  HOUSE_END_TELNO VARCHAR(4),  -- 자택전화 끝번호
+  AREA_NO       VARCHAR(4),  -- 지역번호
+  DETAIL_ADRES  VARCHAR(100) NOT NULL,  -- 상세주소
+  ZIP           VARCHAR(6) NOT NULL,  -- 우편번호
+  OFFM_TELNO    VARCHAR(20),  -- 사무실전화
+  MBTLNUM       VARCHAR(20) NOT NULL,  -- 휴대전화
+  EMAIL_ADRES   VARCHAR(50),  -- 이메일
+  HOUSE_MIDDLE_TELNO CHAR(4),  -- 자택전화 중간번호
+  PSTINST_CODE  CHAR(8),  -- 소속기관코드
+  EMPLYR_STTUS_CODE VARCHAR(15) NOT NULL,  -- 사용자상태코드
+  ESNTL_ID      CHAR(20),  -- 고유ID
+  FRST_REGIST_PNTTM DATE ,  -- 최초등록시각
+  FRST_REGISTER_ID varchar2(20) ,  -- 최초등록자ID
+  LAST_UPDT_PNTTM DATE ,  -- 최종수정시각
+  LAST_UPDUSR_ID varchar2(20) ,  -- 최종수정자ID
+  CONSTRAINT TB_EMPLYR_INFO_CHNG_DTLS_PK PRIMARY KEY (EMPLYR_ID, CHANGE_DE),
+  CONSTRAINT TB_EMPLYR_INFO_CHNG_DTLS_ibfk_1 FOREIGN KEY (EMPLYR_ID) REFERENCES TB_EMPLYR_INFO(EMPLYR_ID)
+) ;
+
+DROP TABLE TB_ORGNZT_INFO CASCADE CONSTRAINTS;
+CREATE TABLE TB_ORGNZT_INFO  (
+  ORGNZT_ID char(20) DEFAULT '' NOT NULL,  -- 조직ID
+  ORGNZT_NM varchar2(20) NOT NULL,  -- 조직명
+  ORGNZT_DC varchar2(100) ,  -- 조직 설명
+  FRST_REGIST_PNTTM DATE ,  -- 최초등록시각
+  FRST_REGISTER_ID varchar2(20) ,  -- 최초등록자ID
+  LAST_UPDT_PNTTM DATE ,  -- 최종수정시각
+  LAST_UPDUSR_ID varchar2(20) ,  -- 최종수정자ID
+  CONSTRAINT TB_ORGNZT_INFO_PK PRIMARY KEY (ORGNZT_ID)
+) ;
+DROP TABLE TB_AUTHOR_GROUP_INFO CASCADE CONSTRAINTS;
+CREATE TABLE TB_AUTHOR_GROUP_INFO  (
+  GROUP_ID char(20) DEFAULT '' NOT NULL,  -- 그룹ID
+  GROUP_NM varchar2(60) NOT NULL,  -- 그룹명
+  GROUP_CREAT_DE char(20) NOT NULL,  -- 생성일자
+  GROUP_DC varchar2(100) ,  -- 그룹 설명
+  FRST_REGIST_PNTTM DATE ,  -- 최초등록시각
+  FRST_REGISTER_ID varchar2(20) ,  -- 최초등록자ID
+  LAST_UPDT_PNTTM DATE ,  -- 최종수정시각
+  LAST_UPDUSR_ID varchar2(20) ,  -- 최종수정자ID
+  CONSTRAINT TB_AUTHOR_GROUP_INFO_PK PRIMARY KEY (GROUP_ID)
+) ;
+DROP TABLE TB_AUTHOR_INFO CASCADE CONSTRAINTS;
+CREATE TABLE TB_AUTHOR_INFO (
+  AUTHOR_CODE   VARCHAR(30) NOT NULL,  -- 권한코드
+  AUTHOR_NM     VARCHAR(60) NOT NULL,  -- 권한명
+  AUTHOR_DC     VARCHAR(200),  -- 권한 설명
+  AUTHOR_CREAT_DE CHAR(20) NOT NULL,  -- 생성일자
+  FRST_REGIST_PNTTM DATE ,  -- 최초등록시각
+  FRST_REGISTER_ID varchar2(20) ,  -- 최초등록자ID
+  LAST_UPDT_PNTTM DATE ,  -- 최종수정시각
+  LAST_UPDUSR_ID varchar2(20) ,  -- 최종수정자ID
+  CONSTRAINT TB_AUTHOR_INFO_PK PRIMARY KEY (AUTHOR_CODE)
+) ;
+
+DROP TABLE TB_EMPLYR_INFO CASCADE CONSTRAINTS;
+CREATE TABLE TB_EMPLYR_INFO  (
+  EMPLYR_ID varchar2(20) NOT NULL,  -- 사용자ID
+  ORGNZT_ID char(20) ,  -- 조직ID
+  USER_NM varchar2(60) NOT NULL,  -- 사용자명
+  PASSWORD varchar2(200) NOT NULL,  -- 비밀번호(해시)
+  EMPL_NO varchar2(20) ,  -- 사번
+  IHIDNUM varchar2(200) ,  -- 주민등록번호
+  SEXDSTN_CODE char(1) ,  -- 성별코드
+  BRTHDY char(20) ,  -- 생년월일
+  FXNUM varchar2(20) ,  -- 팩스
+  HOUSE_ADRES varchar2(100) ,  -- 자택주소
+  PASSWORD_HINT varchar2(100) NOT NULL,  -- 비밀번호 힌트
+  PASSWORD_CNSR varchar2(100) NOT NULL,  -- 비밀번호 정답
+  HOUSE_END_TELNO varchar2(4) ,  -- 자택전화 끝번호
+  AREA_NO varchar2(4) ,  -- 지역번호
+  DETAIL_ADRES varchar2(100) ,  -- 상세주소
+  ZIP varchar2(6) ,  -- 우편번호
+  OFFM_TELNO varchar2(20) ,  -- 사무실전화
+  MBTLNUM varchar2(20) ,  -- 휴대전화
+  EMAIL_ADRES varchar2(50) ,  -- 이메일
+  OFCPS_NM varchar2(60) ,  -- 직책명
+  HOUSE_MIDDLE_TELNO varchar2(4) ,  -- 자택전화 중간번호
+  GROUP_ID char(20) ,  -- 그룹ID
+  PSTINST_CODE char(8) ,  -- 소속기관코드
+  EMPLYR_STTUS_CODE varchar2(15) NOT NULL,  -- 사용자상태코드
+  ESNTL_ID char(20) NOT NULL,  -- 고유ID
+  CRTFC_DN_VALUE varchar2(20) ,  -- 인증DN
+  SBSCRB_DE DATE ,  -- 가입일시
+  FRST_REGIST_PNTTM DATE ,  -- 최초등록시각
+  FRST_REGISTER_ID varchar2(20) ,  -- 최초등록자ID
+  LAST_UPDT_PNTTM DATE ,  -- 최종수정시각
+  LAST_UPDUSR_ID varchar2(20) ,  -- 최종수정자ID
+  CONSTRAINT TB_EMPLYR_INFO_PK PRIMARY KEY (EMPLYR_ID),
+  CONSTRAINT TB_EMPLYR_INFO_ibfk_2 FOREIGN KEY (GROUP_ID) REFERENCES TB_AUTHOR_GROUP_INFO (GROUP_ID) ON DELETE CASCADE,
+  CONSTRAINT TB_EMPLYR_INFO_ibfk_1 FOREIGN KEY (ORGNZT_ID) REFERENCES TB_ORGNZT_INFO (ORGNZT_ID) ON DELETE CASCADE
+) ;
+
+DROP TABLE TB_EMPLYR_SCRTY_ESTBS CASCADE CONSTRAINTS;
+CREATE TABLE TB_EMPLYR_SCRTY_ESTBS (
+  SCRTY_DTRMN_TRGET_ID VARCHAR(20) NOT NULL,  -- 보안결정대상ID(보통 사용자ID)
+  MBER_TY_CODE         VARCHAR(15),  -- 회원유형코드
+  AUTHOR_CODE          VARCHAR(30) NOT NULL,  -- 권한코드
+  FRST_REGIST_PNTTM DATE ,  -- 최초등록시각
+  FRST_REGISTER_ID varchar2(20) ,  -- 최초등록자ID
+  LAST_UPDT_PNTTM DATE ,  -- 최종수정시각
+  LAST_UPDUSR_ID varchar2(20) ,  -- 최종수정자ID
+  CONSTRAINT TB_EMPLYR_SCRTY_ESTBS_PK PRIMARY KEY (SCRTY_DTRMN_TRGET_ID),
+  CONSTRAINT TB_EMPLYR_SCRTY_ESTBS_ibfk_1 FOREIGN KEY (SCRTY_DTRMN_TRGET_ID) REFERENCES TB_EMPLYR_INFO(EMPLYR_ID),
+  CONSTRAINT TB_EMPLYR_SCRTY_ESTBS_ibfk_2 FOREIGN KEY (AUTHOR_CODE) REFERENCES TB_AUTHOR_INFO(AUTHOR_CODE),
+  CONSTRAINT TB_EMPLYR_SCRTY_ESTBS_ibfk_3 FOREIGN KEY (SCRTY_DTRMN_TRGET_ID) REFERENCES TB_ENTRPRS_MBER(ENTRPRS_MBER_ID),
+  CONSTRAINT TB_EMPLYR_SCRTY_ESTBS_ibfk_4 FOREIGN KEY (SCRTY_DTRMN_TRGET_ID) REFERENCES TB_GNRL_MBER(MBER_ID)
+) ;
+
+DROP TABLE TB_BBS_MASTER CASCADE CONSTRAINTS;
+CREATE TABLE TB_BBS_MASTER  (
+  BBS_ID char(20) NOT NULL,  -- 게시판ID
+  BBS_NM varchar2(255) NOT NULL,  -- 게시판명
+  BBS_INTRCN varchar2(2400) ,  -- 게시판 소개
+  BBS_TY_CODE char(6) NOT NULL,  -- 게시판 유형코드
+  BBS_ATTRB_CODE char(6) NOT NULL,  -- 게시판 속성코드
+  REPLY_POSBL_AT char(1) ,  -- 답글 가능(Y/N)
+  FILE_ATCH_POSBL_AT char(1) NOT NULL,  -- 파일첨부 가능(Y/N)
+  ATCH_POSBL_FILE_NUMBER number(2,0) NOT NULL,  -- 첨부가능 파일 수
+  ATCH_POSBL_FILE_SIZE number(8,0) ,  -- 첨부가능 총 용량(단위: 시스템 정의)
+  USE_AT char(1) NOT NULL,  -- 사용여부(Y/N)
+  TMPLAT_ID char(20) ,  -- 템플릿ID
+  FRST_REGISTER_ID varchar2(20) NOT NULL,  -- 최초등록자ID
+  FRST_REGIST_PNTTM DATE NOT NULL,  -- 최초등록시각
+  LAST_UPDUSR_ID varchar2(20) ,  -- 최종수정자ID
+  LAST_UPDT_PNTTM DATE ,  -- 최종수정시각
+  CONSTRAINT TB_BBS_MASTER_PK PRIMARY KEY (BBS_ID)
+) ;
+DROP TABLE TB_BBS_USE CASCADE CONSTRAINTS;
+CREATE TABLE TB_BBS_USE  (
+  BBS_ID char(20) NOT NULL,  -- 게시판ID
+  TRGET_ID char(20) DEFAULT '' NOT NULL,  -- 사용대상ID
+  USE_AT char(1) NOT NULL,  -- 사용여부(Y/N)
+  REGIST_SE_CODE char(6) ,  -- 등록구분코드
+  FRST_REGIST_PNTTM DATE ,  -- 최초등록시각
+  FRST_REGISTER_ID varchar2(20) NOT NULL,  -- 최초등록자ID
+  LAST_UPDT_PNTTM DATE ,  -- 최종수정시각
+  LAST_UPDUSR_ID varchar2(20) ,  -- 최종수정자ID
+  CONSTRAINT TB_BBS_USE_PK PRIMARY KEY (BBS_ID,TRGET_ID),
+  CONSTRAINT TB_BBS_USE_ibfk_1 FOREIGN KEY (BBS_ID) REFERENCES TB_BBS_MASTER (BBS_ID)
+) ;
+DROP TABLE TB_BBS CASCADE CONSTRAINTS;
+CREATE TABLE TB_BBS (
+  NTT_ID number(20,0) NOT NULL,  -- 게시물ID
+  BBS_ID char(20) NOT NULL,  -- 게시판ID
+  NTT_NO number(20,0) ,  -- 게시물 번호(정렬/표시용)
+  NTT_SJ varchar2(2000) ,  -- 제목
+  NTT_CN CLOB,  -- 내용
+  ANSWER_AT char(1) ,  -- 답변글 여부(Y/N)
+  PARNTSCTT_NO number(10,0) ,  -- 부모글 번호
+  ANSWER_LC number(11) ,  -- 답변 계층(레벨)
+  SORT_ORDR number(8,0) ,  -- 정렬순서
+  RDCNT number(10,0) ,  -- 조회수
+  USE_AT char(1) NOT NULL,  -- 사용여부(Y/N)
+  NTCE_BGNDE char(20) ,  -- 공지 시작일시
+  NTCE_ENDDE char(20) ,  -- 공지 종료일시
+  NTCR_ID varchar2(20) ,  -- 게시자ID
+  NTCR_NM varchar2(20) ,  -- 게시자명
+  PASSWORD varchar2(200) ,  -- 비밀번호(해시)
+  ATCH_FILE_ID char(20) ,  -- 첨부파일 묶음ID
+  FRST_REGIST_PNTTM DATE NOT NULL,  -- 최초등록시각
+  FRST_REGISTER_ID varchar2(20) NOT NULL,  -- 최초등록자ID
+  LAST_UPDT_PNTTM DATE ,  -- 최종수정시각
+  LAST_UPDUSR_ID varchar2(20) ,  -- 최종수정자ID
+  CONSTRAINT TB_BBS_PK PRIMARY KEY (NTT_ID,BBS_ID),
+  CONSTRAINT TB_BBS_ibfk_1 FOREIGN KEY (BBS_ID) REFERENCES TB_BBS_MASTER (BBS_ID)
+) ;
+DROP TABLE TB_BBS_MASTER_OPTN CASCADE CONSTRAINTS;
+CREATE TABLE TB_BBS_MASTER_OPTN (
+  BBS_ID char(20) DEFAULT '' NOT NULL,  -- 게시판ID
+  ANSWER_AT char(1) DEFAULT '' NOT NULL,  -- 답변글 여부(Y/N)
+  STSFDG_AT char(1) DEFAULT '' NOT NULL,  -- 만족도 조사 사용(Y/N)
+  FRST_REGIST_PNTTM DATE DEFAULT SYSDATE NOT NULL,  -- 최초등록시각
+  LAST_UPDT_PNTTM DATE ,  -- 최종수정시각
+  FRST_REGISTER_ID varchar2(20) DEFAULT '' NOT NULL,  -- 최초등록자ID
+  LAST_UPDUSR_ID varchar2(20) ,  -- 최종수정자ID
+  CONSTRAINT TB_BBS_MASTER_OPTN_PK PRIMARY KEY (BBS_ID)
+) ;
+DROP TABLE TB_ENTRPRS_MBER CASCADE CONSTRAINTS;
+CREATE TABLE TB_ENTRPRS_MBER (
+  ENTRPRS_MBER_ID varchar2(20) DEFAULT '' NOT NULL,  -- 기업회원ID
+  ENTRPRS_SE_CODE char(15) ,  -- 기업구분코드
+  BIZRNO varchar2(10) ,  -- 사업자등록번호
+  JURIRNO varchar2(13) ,  -- 법인등록번호
+  CMPNY_NM varchar2(60) NOT NULL,  -- 회사명
+  CXFC varchar2(50) ,  -- 대표자명
+  ZIP varchar2(6) ,  -- 우편번호
+  ADRES varchar2(100) ,  -- 주소
+  ENTRPRS_MIDDLE_TELNO varchar2(4) ,  -- 전화 중간번호
+  FXNUM varchar2(20) ,  -- 팩스
+  INDUTY_CODE char(15) ,  -- 업종코드
+  APPLCNT_NM varchar2(50) NOT NULL,  -- 신청자명
+  APPLCNT_IHIDNUM varchar2(200) ,  -- 신청자 주민등록번호
+  SBSCRB_DE DATE ,  -- 가입일시
+  ENTRPRS_MBER_STTUS varchar2(15) ,  -- 회원상태코드
+  ENTRPRS_MBER_PASSWORD varchar2(200) NOT NULL,  -- 비밀번호(해시)
+  ENTRPRS_MBER_PASSWORD_HINT varchar2(100) NOT NULL,  -- 비밀번호 힌트
+  ENTRPRS_MBER_PASSWORD_CNSR varchar2(100) NOT NULL,  -- 비밀번호 정답
+  GROUP_ID char(20) ,  -- 그룹ID
+  DETAIL_ADRES varchar2(100) ,  -- 상세주소
+  ENTRPRS_END_TELNO varchar2(4) ,  -- 전화 끝번호
+  AREA_NO varchar2(4) ,  -- 지역번호
+  APPLCNT_EMAIL_ADRES varchar2(50) ,  -- 신청자 이메일
+  ESNTL_ID char(20) NOT NULL,  -- 고유ID
+  FRST_REGIST_PNTTM DATE ,  -- 최초등록시각
+  FRST_REGISTER_ID varchar2(20) ,  -- 최초등록자ID
+  LAST_UPDT_PNTTM DATE ,  -- 최종수정시각
+  LAST_UPDUSR_ID varchar2(20) ,  -- 최종수정자ID
+  CONSTRAINT TB_ENTRPRS_MBER_PK PRIMARY KEY (ENTRPRS_MBER_ID),
+  CONSTRAINT TB_ENTRPRS_MBER_ibfk_1 FOREIGN KEY (GROUP_ID) REFERENCES TB_AUTHOR_GROUP_INFO (GROUP_ID) ON DELETE CASCADE
+) ;
+DROP TABLE TB_FILE CASCADE CONSTRAINTS;
+CREATE TABLE TB_FILE (
+  ATCH_FILE_ID char(20) NOT NULL,  -- 첨부파일 묶음ID
+  CREAT_DT DATE NOT NULL,  -- 생성시각
+  USE_AT char(1) ,  -- 사용여부(Y/N)
+  FRST_REGIST_PNTTM DATE ,  -- 최초등록시각
+  FRST_REGISTER_ID varchar2(20) ,  -- 최초등록자ID
+  LAST_UPDT_PNTTM DATE ,  -- 최종수정시각
+  LAST_UPDUSR_ID varchar2(20) ,  -- 최종수정자ID
+  CONSTRAINT TB_FILE_PK PRIMARY KEY (ATCH_FILE_ID)
+) ;
+DROP TABLE TB_FILE_DETAIL CASCADE CONSTRAINTS;
+CREATE TABLE TB_FILE_DETAIL (
+  ATCH_FILE_ID char(20) NOT NULL,  -- 첨부파일 묶음ID
+  FILE_SN number(10,0) NOT NULL,  -- 파일 일련번호
+  FILE_STRE_COURS varchar2(2000) NOT NULL,  -- 파일 저장경로
+  STRE_FILE_NM varchar2(255) NOT NULL,  -- 저장파일명
+  ORIGNL_FILE_NM varchar2(255) ,  -- 원파일명
+  FILE_EXTSN varchar2(20) NOT NULL,  -- 파일확장자
+  FILE_CN CLOB,  -- 파일 내용/비고
+  FILE_SIZE number(8,0) ,  -- 파일크기(Byte)
+  FRST_REGIST_PNTTM DATE ,  -- 최초등록시각
+  FRST_REGISTER_ID varchar2(20) ,  -- 최초등록자ID
+  LAST_UPDT_PNTTM DATE ,  -- 최종수정시각
+  LAST_UPDUSR_ID varchar2(20) ,  -- 최종수정자ID
+  CONSTRAINT TB_FILE_DETAIL_PK PRIMARY KEY (ATCH_FILE_ID,FILE_SN),
+  CONSTRAINT TB_FILE_DETAIL_ibfk_1 FOREIGN KEY (ATCH_FILE_ID) REFERENCES TB_FILE (ATCH_FILE_ID)
+) ;
+DROP TABLE TB_GNRL_MBER CASCADE CONSTRAINTS;
+CREATE TABLE TB_GNRL_MBER (
+  MBER_ID varchar2(20) DEFAULT '' NOT NULL,  -- 회원ID
+  PASSWORD varchar2(200) NOT NULL,  -- 비밀번호(해시)
+  PASSWORD_HINT varchar2(100) NOT NULL,  -- 비밀번호 힌트
+  PASSWORD_CNSR varchar2(100) NOT NULL,  -- 비밀번호 정답
+  IHIDNUM varchar2(200) ,  -- 주민등록번호
+  MBER_NM varchar2(50) NOT NULL,  -- 회원명
+  ZIP varchar2(6) ,  -- 우편번호
+  ADRES varchar2(100) ,  -- 주소
+  AREA_NO varchar2(4) ,  -- 지역번호
+  MBER_STTUS varchar2(15) ,  -- 회원상태코드
+  DETAIL_ADRES varchar2(100) ,  -- 상세주소
+  END_TELNO varchar2(4) ,  -- 전화 끝번호
+  MBTLNUM varchar2(20) ,  -- 휴대전화
+  GROUP_ID char(20) ,  -- 그룹ID
+  MBER_FXNUM varchar2(20) ,  -- 팩스번호
+  MBER_EMAIL_ADRES varchar2(50) ,  -- 이메일주소
+  MIDDLE_TELNO varchar2(4) ,  -- 전화 중간번호
+  SBSCRB_DE DATE ,  -- 가입일시
+  SEXDSTN_CODE char(1) ,  -- 성별코드
+  ESNTL_ID char(20) NOT NULL,  -- 고유ID
+  FRST_REGIST_PNTTM DATE ,  -- 최초등록시각
+  FRST_REGISTER_ID varchar2(20) ,  -- 최초등록자ID
+  LAST_UPDT_PNTTM DATE ,  -- 최종수정시각
+  LAST_UPDUSR_ID varchar2(20) ,  -- 최종수정자ID
+  CONSTRAINT TB_GNRL_MBER_PK PRIMARY KEY (MBER_ID),
+  CONSTRAINT TB_GNRL_MBER_ibfk_1 FOREIGN KEY (GROUP_ID) REFERENCES TB_AUTHOR_GROUP_INFO (GROUP_ID) ON DELETE CASCADE
+) ;
+DROP TABLE TB_SCHDUL_INFO CASCADE CONSTRAINTS;
+CREATE TABLE TB_SCHDUL_INFO (
+  SCHDUL_ID char(20) NOT NULL,  -- 일정ID
+  SCHDUL_SE char(1) ,  -- 일정구분코드
+  SCHDUL_DEPT_ID varchar2(20) ,  -- 부서ID
+  SCHDUL_KND_CODE varchar2(20) ,  -- 일정종류코드
+  SCHDUL_BEGINDE  char(20) ,  -- 시작일시
+  SCHDUL_ENDDE  char(20) ,  -- 종료일시
+  SCHDUL_NM varchar2(255) ,  -- 일정명
+  SCHDUL_CN varchar2(2500) ,  -- 일정 내용
+  SCHDUL_PLACE varchar2(255) ,  -- 장소
+  SCHDUL_IPCR_CODE char(1) ,  -- 중요도코드
+  SCHDUL_CHARGER_ID varchar2(20) ,  -- 담당자ID
+  ATCH_FILE_ID char(20) ,  -- 첨부파일 묶음ID
+  FRST_REGIST_PNTTM DATE ,  -- 최초등록시각
+  FRST_REGISTER_ID varchar2(20) ,  -- 최초등록자ID
+  LAST_UPDT_PNTTM DATE ,  -- 최종수정시각
+  LAST_UPDUSR_ID varchar2(20) ,  -- 최종수정자ID
+  REPTIT_SE_CODE char(3) ,  -- 반복구분코드
+  CONSTRAINT TB_SCHDUL_INFO_PK PRIMARY KEY (SCHDUL_ID)
+) ;
+CREATE OR REPLACE VIEW VW_USER_MASTER ( ESNTL_ID,USER_ID,PASSWORD,USER_NM,USER_ZIP,USER_ADRES,USER_EMAIL,GROUP_ID, USER_SE, ORGNZT_ID ) 
+AS
+        SELECT ESNTL_ID, MBER_ID,PASSWORD,MBER_NM,ZIP,ADRES,MBER_EMAIL_ADRES,' ','GNR' AS USER_SE, ' ' ORGNZT_ID
+        FROM TB_GNRL_MBER
+    UNION ALL
+        SELECT ESNTL_ID,EMPLYR_ID,PASSWORD,USER_NM,ZIP,HOUSE_ADRES,EMAIL_ADRES,GROUP_ID ,'USR' AS USER_SE, ORGNZT_ID
+        FROM TB_EMPLYR_INFO
+    UNION ALL
+        SELECT ESNTL_ID,ENTRPRS_MBER_ID,ENTRPRS_MBER_PASSWORD,CMPNY_NM,ZIP,ADRES,APPLCNT_EMAIL_ADRES,' ' ,'ENT' AS USER_SE, ' ' ORGNZT_ID
+        FROM TB_ENTRPRS_MBER 
+;
+-- 커뮤니티/동호회/약관/다이어리 (기능 유지 — 표준 TB_ 명명 + 감사컬럼)
+DROP TABLE TB_CMMNTY_USER;
+DROP TABLE TB_CLUB_USER;
+DROP TABLE TB_CMMNTY;
+DROP TABLE TB_CLUB;
+DROP TABLE TB_STPLAT_INFO;
+DROP TABLE TB_DIARY_INFO;
+CREATE TABLE TB_CMMNTY (
+  CMMNTY_ID varchar2(20) NOT NULL,  -- 커뮤니티ID
+  CMMNTY_NM varchar2(60) ,  -- 커뮤니티명
+  USE_AT char(1) ,  -- 사용여부(Y/N)
+  FRST_REGIST_PNTTM DATE,  -- 최초등록시각
+  FRST_REGISTER_ID  varchar2(20),  -- 최초등록자ID
+  LAST_UPDT_PNTTM   DATE,  -- 최종수정시각
+  LAST_UPDUSR_ID    varchar2(20),  -- 최종수정자ID
+  CONSTRAINT TB_CMMNTY_PK PRIMARY KEY (CMMNTY_ID)
+) ;
+CREATE TABLE TB_CMMNTY_USER (
+  ESNTL_ID varchar2(20) NOT NULL,  -- 고유ID
+  CMMNTY_ID varchar2(20) ,  -- 커뮤니티ID
+  EMPLYR_ID varchar2(20) ,  -- 사용자ID
+  MNGR_AT char(1) ,  -- 관리자 여부(Y/N)
+  USE_AT char(1) ,  -- 사용여부(Y/N)
+  REGIST_SE_CODE varchar2(6) ,  -- 등록구분코드
+  FRST_REGIST_PNTTM DATE,  -- 최초등록시각
+  FRST_REGISTER_ID  varchar2(20),  -- 최초등록자ID
+  LAST_UPDT_PNTTM   DATE,  -- 최종수정시각
+  LAST_UPDUSR_ID    varchar2(20),  -- 최종수정자ID
+  CONSTRAINT TB_CMMNTY_USER_PK PRIMARY KEY (ESNTL_ID)
+) ;
+CREATE TABLE TB_CLUB (
+  CLB_ID varchar2(20) NOT NULL,  -- 동호회ID
+  CLB_NM varchar2(60) ,  -- 동호회명
+  USE_AT char(1) ,  -- 사용여부(Y/N)
+  FRST_REGIST_PNTTM DATE,  -- 최초등록시각
+  FRST_REGISTER_ID  varchar2(20),  -- 최초등록자ID
+  LAST_UPDT_PNTTM   DATE,  -- 최종수정시각
+  LAST_UPDUSR_ID    varchar2(20),  -- 최종수정자ID
+  CONSTRAINT TB_CLUB_PK PRIMARY KEY (CLB_ID)
+) ;
+CREATE TABLE TB_CLUB_USER (
+  ESNTL_ID varchar2(20) NOT NULL,  -- 고유ID
+  CLB_ID varchar2(20) ,  -- 동호회ID
+  EMPLYR_ID varchar2(20) ,  -- 사용자ID
+  OPRTR_AT char(1) ,  -- 운영자 여부(Y/N)
+  USE_AT char(1) ,  -- 사용여부(Y/N)
+  REGIST_SE_CODE varchar2(6) ,  -- 등록구분코드
+  FRST_REGIST_PNTTM DATE,  -- 최초등록시각
+  FRST_REGISTER_ID  varchar2(20),  -- 최초등록자ID
+  LAST_UPDT_PNTTM   DATE,  -- 최종수정시각
+  LAST_UPDUSR_ID    varchar2(20),  -- 최종수정자ID
+  CONSTRAINT TB_CLUB_USER_PK PRIMARY KEY (ESNTL_ID)
+) ;
+CREATE TABLE TB_STPLAT_INFO (
+  USE_STPLAT_ID varchar2(20) NOT NULL,  -- 이용약관ID
+  USE_STPLAT_NM varchar2(100) ,  -- 이용약관명
+  USE_STPLAT_CN CLOB ,  -- 이용약관 내용
+  INFO_PROVD_AGRE_CN CLOB ,  -- 정보제공 동의 내용
+  FRST_REGIST_PNTTM DATE,  -- 최초등록시각
+  FRST_REGISTER_ID  varchar2(20),  -- 최초등록자ID
+  LAST_UPDT_PNTTM   DATE,  -- 최종수정시각
+  LAST_UPDUSR_ID    varchar2(20),  -- 최종수정자ID
+  CONSTRAINT TB_STPLAT_INFO_PK PRIMARY KEY (USE_STPLAT_ID)
+) ;
+CREATE TABLE TB_DIARY_INFO (
+  DIARY_ID varchar2(20) NOT NULL,  -- 다이어리ID
+  SCHDUL_ID varchar2(20) ,  -- 일정ID
+  DIARY_CN varchar2(2500) ,  -- 다이어리 내용
+  FRST_REGIST_PNTTM DATE,  -- 최초등록시각
+  FRST_REGISTER_ID  varchar2(20),  -- 최초등록자ID
+  LAST_UPDT_PNTTM   DATE,  -- 최종수정시각
+  LAST_UPDUSR_ID    varchar2(20),  -- 최종수정자ID
+  CONSTRAINT TB_DIARY_INFO_PK PRIMARY KEY (DIARY_ID)
+) ;
+
+-- 개정이력: 2026.06.17  구재호  커뮤니티/동호회/약관/다이어리 TB_ 테이블 추가

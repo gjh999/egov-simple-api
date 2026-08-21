@@ -1,0 +1,47 @@
+# ── 빌드 산출물 ──────────────────────────────────────────────
+target/
+*.jar
+*.war
+*.class
+
+# ── 런타임 생성물 ────────────────────────────────────────────
+/log/
+*.log
+# logging.file.name 이 만드는 확장자 없는 로그 파일
+/egov-simple-api
+files/
+upload/
+# 내장 HSQLDB 파일
+.localdb/
+.hsqldb/
+*.lck
+*.lobs
+*.script.new
+
+# ── 시크릿 · 로컬 설정 (절대 커밋 금지) ──────────────────────
+.env
+.env.local
+.env.*.local
+application-local.properties
+application-prod.properties
+*-secret*.properties
+*.pem
+*.key
+*.p12
+*.jks
+keystore*
+
+# ── DB 백업 ──────────────────────────────────────────────────
+.dbbackup/
+
+# ── IDE · OS ─────────────────────────────────────────────────
+.idea/
+.vscode/
+.settings/
+.classpath
+.project
+.springBeans
+.factorypath
+*.iml
+.DS_Store
+Thumbs.db

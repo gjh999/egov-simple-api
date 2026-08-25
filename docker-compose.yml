@@ -1,0 +1,55 @@
+# 심플 홈페이지 SPA 한 세트를 한 번에 띄운다 — 백엔드 1 + 프론트 2.
+#
+# 이 백엔드는 기본 프로필이 내장 HSQLDB 라 별도 DB 컨테이너가 필요 없다.
+# 외부 서비스 없이 `docker compose up` 하나로 전체가 동작한다.
+#
+# 프론트 저장소를 이 저장소와 같은 상위 디렉터리에 함께 clone 했다고 가정한다.
+# 위치가 다르면 REACT_CONTEXT · VUE_CONTEXT 로 조정한다.
+#
+#   git clone https://github.com/gjh999/egov-simple-api.git
+#   git clone https://github.com/gjh999/egov-simple-react.git
+#   git clone https://github.com/gjh999/egov-simple-vue.git
+#   cd egov-simple-api && docker compose up --build
+
+services:
+  api:
+    build: .
+    image: egov-simple-api:${APP_VERSION:-1.0.0}
+    container_name: egov-simple-api
+    ports:
+      - "${API_PORT:-8090}:8090"
+    environment:
+      # 운영에서는 반드시 바꾼다 — 비워 두면 애플리케이션이 개발용 자리표시자를 쓴다.
+      - EGOV_JWT_SECRET=${EGOV_JWT_SECRET:-}
+      # 브라우저가 프론트 컨테이너(nginx)를 통해 들어오므로 그 주소를 허용한다.
+      - EGOV_ALLOW_ORIGIN=${EGOV_ALLOW_ORIGIN:-http://localhost:3000,http://localhost:3001}
+      - JWT_COOKIE_SECURE=${JWT_COOKIE_SECURE:-false}
+      - JWT_COOKIE_SAMESITE=${JWT_COOKIE_SAMESITE:-Lax}
+    restart: unless-stopped
+
+  react:
+    build:
+      context: ${REACT_CONTEXT:-../egov-simple-react}
+    image: egov-simple-react:${APP_VERSION:-1.0.0}
+    container_name: egov-simple-react
+    ports:
+      - "${REACT_PORT:-3000}:8080"
+    environment:
+      # nginx 가 /api 를 넘길 대상. 같은 compose 네트워크의 서비스 이름으로 찾는다.
+      - BACKEND_URL=http://api:8090
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  vue:
+    build:
+      context: ${VUE_CONTEXT:-../egov-simple-vue}
+    image: egov-simple-vue:${APP_VERSION:-1.0.0}
+    container_name: egov-simple-vue
+    ports:
+      - "${VUE_PORT:-3001}:8080"
+    environment:
+      - BACKEND_URL=http://api:8090
+    depends_on:
+      - api
+    restart: unless-stopped

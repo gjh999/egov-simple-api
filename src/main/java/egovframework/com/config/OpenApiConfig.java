@@ -18,9 +18,9 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 @Configuration
 public class OpenApiConfig {
 	
-	private static final String API_NAME = "Simple Homepage Project API";
+	private static final String API_NAME = "eGovFrame Simple Homepage API";
 	private static final String API_VERSION = "5.0.0";
-	private static final String API_DESCRIPTION = "심플홈페이지 프로젝트 명세서";
+	private static final String API_DESCRIPTION = "전자정부표준프레임워크 5.0 심플 홈페이지 REST API 명세 (SPA 전용, Thymeleaf 미포함)";
 
 	@Bean
 	public OpenAPI api() {
@@ -48,6 +48,6 @@ public class OpenApiConfig {
 						.addSchemas("passwordMap", passwordMap))
 				.externalDocs(new ExternalDocumentation()
 				.description("Wiki Documentation")
-			    .url("https://github.com/eGovFramework/egovframe-template-simple-backend/wiki"));
+			    .url("https://github.com/gjh999/egov-simple-api"));
 	}
 }

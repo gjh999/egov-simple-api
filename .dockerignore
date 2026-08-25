@@ -1,0 +1,12 @@
+# 이미지 빌드에 필요 없는 것들 — 컨텍스트를 작게 유지한다.
+target
+.git
+.gitignore
+.localdb
+log
+docs
+k8s
+Dockerfile
+docker-compose.yml
+README.md
+DATABASE

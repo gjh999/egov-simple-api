@@ -87,7 +87,7 @@ public class EgovLoginApiController {
 
 	/**
 	 * 쿠키 SameSite 속성.
-	 * <p>프론트와 API 가 같은 사이트(localhost:5173 → localhost:8080, 또는 같은 등록도메인)면
+	 * <p>프론트와 API 가 같은 사이트(localhost:3000 → localhost:8090, 또는 같은 등록도메인)면
 	 * {@code Lax}/{@code Strict} 로 충분하다. 프론트와 API 의 등록도메인이 서로 다르면
 	 * 브라우저가 크로스사이트 요청에 쿠키를 싣지 않으므로 {@code None} + {@code Secure}(HTTPS) 가 필요하다.</p>
 	 */

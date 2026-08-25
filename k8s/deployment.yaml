@@ -1,0 +1,70 @@
+# egov-simple-api 배포 예시.
+#
+# 기본 프로필은 내장 HSQLDB 라 이 매니페스트 하나로 뜬다 — 학습·데모용이다.
+# 운영에서는 아래 두 가지를 반드시 바꾼다.
+#   1) EGOV_JWT_SECRET 을 Secret 으로 주입한다(아래 예시는 자리표시자다).
+#   2) 외부 DB 를 쓰도록 Globals.DbType 과 접속 정보를 넘긴다 —
+#      내장 HSQLDB 는 파드가 재시작되면 데이터가 사라진다.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: egov-simple-api
+  labels:
+    app: egov-simple-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: egov-simple-api
+  template:
+    metadata:
+      labels:
+        app: egov-simple-api
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+      containers:
+        - name: api
+          image: egov-simple-api:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8090
+          env:
+            - name: EGOV_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: egov-simple-api-secret
+                  key: jwt-secret
+                  optional: true
+            - name: EGOV_ALLOW_ORIGIN
+              value: "http://egov-simple-react,http://egov-simple-vue"
+            - name: JWT_COOKIE_SECURE
+              value: "false"
+            - name: JWT_COOKIE_SAMESITE
+              value: "Lax"
+          # 인증 없이 열려 있는 가벼운 엔드포인트로 상태를 본다.
+          readinessProbe:
+            httpGet:
+              path: /api/i18n/ko
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/i18n/ko
+              port: http
+            initialDelaySeconds: 90
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop: ["ALL"]

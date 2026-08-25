@@ -7,9 +7,9 @@
 
 | 저장소 | 역할 | 개발 포트 |
 |---|---|---|
-| **egov-simple-api** (이 저장소) | REST API | 8080 (`/api`) |
-| [egov-simple-react](https://github.com/gjh999/egov-simple-react) | React 19 프론트 | 5173 |
-| [egov-simple-vue](https://github.com/gjh999/egov-simple-vue) | Vue 3 프론트 | 5174 |
+| **egov-simple-api** (이 저장소) | REST API | 8090 (`/api`) |
+| [egov-simple-react](https://github.com/gjh999/egov-simple-react) | React 19 프론트 | 3000 |
+| [egov-simple-vue](https://github.com/gjh999/egov-simple-vue) | Vue 3 프론트 | 3001 |
 
 두 프론트는 이 백엔드 하나를 함께 사용하며 기능이 서로 대등합니다.
 
@@ -17,7 +17,17 @@
 > 엔드포인트 경로·응답 필드·인증 규칙을 바꿀 때는 두 프론트의 `src/api/` 를 같이 수정하세요.
 > 계약 내용은 각 프론트 저장소의 `src/api/CONTRACT.md` 에 정리돼 있습니다.
 
+## 화면
+
+### Swagger UI
+
+![Swagger UI](docs/screenshots/01-swagger.png)
+
+> 위 화면은 이 저장소를 실제로 기동해 촬영한 것입니다.
+> 같은 시점의 기능 점검 결과(**12 / 12 통과**)는 [docs/VERIFICATION.md](docs/VERIFICATION.md) 에 있습니다.
+
 ---
+
 
 ## 1. 빠른 시작
 
@@ -33,7 +43,7 @@ mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Dfile.encoding=UTF-8"
 **내장 HSQLDB**로 뜨므로 별도 DB 설치가 필요 없습니다.
 스키마와 시드 데이터는 `src/main/resources/db/shtdb.sql` 이 기동 시 적재합니다.
 
-API 문서(Swagger UI): <http://localhost:8080/api/swagger-ui.html>
+API 문서(Swagger UI): <http://localhost:8090/api/swagger-ui.html>
 
 ### 테스트 계정
 
@@ -49,7 +59,7 @@ API 문서(Swagger UI): <http://localhost:8080/api/swagger-ui.html>
 ### 2-1. 기준 경로
 
 모든 엔드포인트는 `/api` 아래에 있습니다 (`server.servlet.context-path=/api`).
-예) 게시물 목록 = `GET http://localhost:8080/api/board`
+예) 게시물 목록 = `GET http://localhost:8090/api/board`
 
 ### 2-2. 인증 — JWT + HttpOnly 쿠키
 
@@ -125,6 +135,26 @@ XSS 로 토큰을 탈취할 수 없습니다. 프론트는 모든 요청에 `cre
 > **일정 API 의 `month` 는 0-based 입니다**(1월=0, 8월=7). `java.util.Calendar` 규약을 그대로 노출하며,
 > JavaScript `Date#getMonth()` 와 같은 기준이라 프론트는 변환 없이 넘깁니다.
 
+### 2-7. SNS 간편 로그인
+
+카카오·네이버 로그인을 제공합니다. **공급자 자격증명은 이 백엔드에만 둡니다** —
+프론트에 클라이언트 ID 를 노출하지 않습니다.
+
+```
+GET /api/login/{kakao|naver}            → state 를 만들어 보관하고 공급자로 리다이렉트
+GET /api/login/{kakao|naver}/callback   → 토큰 교환 후 ACCESS_TOKEN 쿠키 발급
+```
+
+`application.properties` 에 키를 넣으면 동작합니다.
+
+| 설정 | 기본값 |
+|---|---|
+| `Sns.kakao.clientId` · `Sns.naver.clientId` · `Sns.naver.clientSecret` | `YOUR_CLIENT_ID` |
+| `Sns.kakao.callbackUrl` · `Sns.naver.callbackUrl` | `http://localhost:3000/login/{provider}/callback` |
+
+콜백 주소는 **프론트 라우트**입니다. 공급자가 프론트로 되돌려보내면 프론트가 그 code 를
+위 콜백 API 로 넘깁니다. 프론트 개발 포트를 바꿨다면 이 값도 함께 바꿔야 합니다.
+
 ### 2-6. 다국어
 
 화면 문구의 원본은 이 저장소의 `src/main/resources/egovframework/message/message-ui_{ko,en}.properties` 입니다.
@@ -132,6 +162,9 @@ XSS 로 토큰을 탈취할 수 없습니다. 프론트는 모든 요청에 `cre
 문구를 프론트에 박아 두면 두 화면이 갈라집니다.
 
 ko/en 은 **키 집합이 같아야** 합니다. 한쪽에만 키를 추가하면 다른 언어에서 키 문자열이 그대로 노출됩니다.
+
+> 프론트가 쓰는 화면 문구 키 153 개 중 **150 개(98%)** 가 이 번들에 등록돼 있어
+> 언어 전환이 실제로 동작합니다. 나머지 2 개는 값이 끼어드는 문구(첨부 최대 개수 등)라 프론트 대비값으로 둡니다.
 
 ---
 
@@ -150,14 +183,35 @@ java -jar target/egov-simple-api-1.0.0.jar
 | `EGOV_CRYPTO_KEY` | `egovframe` | 암호화 서비스 키 |
 | `JWT_COOKIE_SECURE` | `false` | HTTPS 배포 시 `true` |
 | `JWT_COOKIE_SAMESITE` | `Lax` | 프론트와 API 의 등록도메인이 다르면 `None` (+ Secure) |
-| `EGOV_ALLOW_ORIGIN` | `localhost:5173,5174` | 실제 프론트 도메인 (와일드카드 금지) |
-| `EGOV_FRONT_URL` | `localhost:5173` | 서버가 프론트로 돌려보낼 때 쓰는 기준 URL |
+| `EGOV_ALLOW_ORIGIN` | `localhost:3000,3001` | 실제 프론트 도메인 (와일드카드 금지) |
+| `EGOV_FRONT_URL` | `localhost:3000` | 서버가 프론트로 돌려보낼 때 쓰는 기준 URL |
 
 ### CORS 와 쿠키
 
 프론트와 API 를 **같은 도메인**에 두고 `/api` 를 프록시하면 쿠키 문제가 생기지 않습니다.
 도메인을 분리한다면 `JWT_COOKIE_SAMESITE=None` + `JWT_COOKIE_SECURE=true`(HTTPS) +
 `EGOV_ALLOW_ORIGIN` 화이트리스트가 **모두** 필요합니다.
+
+### 컨테이너로 실행
+
+`Dockerfile` 과 `k8s/` 매니페스트가 들어 있습니다. 기본 프로필이 내장 HSQLDB 라
+**DB 컨테이너 없이 이 이미지 하나로** 뜹니다.
+
+```bash
+docker build -t egov-simple-api:latest .
+docker run --rm -p 8090:8090 egov-simple-api:latest
+```
+
+세트로 띄우려면 `docker-compose.yml` 을 쓰세요 — 이 백엔드와 프론트 두 개가 함께 뜹니다.
+프론트 저장소를 같은 상위 디렉터리에 clone 해 두어야 합니다.
+
+```bash
+git clone https://github.com/gjh999/egov-simple-api.git
+git clone https://github.com/gjh999/egov-simple-react.git
+git clone https://github.com/gjh999/egov-simple-vue.git
+cd egov-simple-api && docker compose up --build
+# API 8090 · React 3000 · Vue 3001
+```
 
 ### DB 전환
 
@@ -181,7 +235,7 @@ mvn test    # JUnit 20건
 | 권한별 접근 제어 (관리자 API 401/403) |
 | 게시판 조회·게시판 마스터 검색 |
 
-> 테스트는 랜덤 포트로 앱을 띄웁니다. **8080 에서 개발 서버가 떠 있으면 내장 HSQLDB 파일 락이 충돌해
+> 테스트는 랜덤 포트로 앱을 띄웁니다. **8090 에서 개발 서버가 떠 있으면 내장 HSQLDB 파일 락이 충돌해
 > 500 이 납니다** — 테스트 전에 개발 서버를 내려 주세요.
 
 ---
